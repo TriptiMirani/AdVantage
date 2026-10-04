@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum CampaignStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  ENDED
+}
+
+model Campaign {
+  id                      String         @id @default(uuid())
+  name                    String
+  status                  CampaignStatus @default(DRAFT)
+  budgetCents             Int
+  spentMicros             BigInt         @default(0)
+  costPerImpressionMicros Int
+  costPerClickCents       Int
+  targetAudience          Json
+  creativeUrl             String
+  startDate               DateTime
+  endDate                 DateTime
+  hourlyStats             HourlyStat[]
+  dailyStats              DailyStat[]
+}
+
+model HourlyStat {
+  id          String   @id @default(uuid())
+  campaignId  String
+  campaign    Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  hourBucket  DateTime
+  impressions Int      @default(0)
+  clicks      Int      @default(0)
+  spendMicros BigInt   @default(0)
+
+  @@unique([campaignId, hourBucket])
+  @@index([campaignId, hourBucket])
+  @@index([hourBucket])
+}
+
+// Stored table (not a view) so Phase 3 can upsert daily rows.
+// Phase 4 can still roll these up from hourly or query hourly only — documented then.
+model DailyStat {
+  id          String   @id @default(uuid())
+  campaignId  String
+  campaign    Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  dayBucket   DateTime
+  impressions Int      @default(0)
+  clicks      Int      @default(0)
+  spendMicros BigInt   @default(0)
+
+  @@unique([campaignId, dayBucket])
+  @@index([campaignId, dayBucket])
+  @@index([dayBucket])
+}
+
+// One row per committed flush. Lets a replayed batch recognize that its commit already happened.
+model FlushBatch {
+  id          String   @id
+  committedAt DateTime @default(now())
+}

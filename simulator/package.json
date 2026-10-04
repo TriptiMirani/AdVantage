@@ -1,0 +1,16 @@
+{
+  "name": "advantage-simulator",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "simulate": "tsx src/run.ts",
+    "test": "node --import tsx --test src/stats.test.ts src/verify.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "22.10.5",
+    "tsx": "4.19.2",
+    "typescript": "5.7.3"
+  }
+}

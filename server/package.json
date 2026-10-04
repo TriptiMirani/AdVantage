@@ -1,0 +1,30 @@
+{
+  "name": "advantage-server",
+  "private": true,
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test src/stats/keys.test.ts src/campaignStatusCache.test.ts src/worker/aggregate.test.ts src/worker/flush.test.ts src/analytics/analytics.test.ts src/analytics/rank.test.ts src/schemas/campaign.test.ts",
+    "worker": "tsx src/worker/index.ts",
+    "db:generate": "dotenv -e ../.env -- prisma generate",
+    "db:migrate": "dotenv -e ../.env -- prisma migrate dev",
+    "db:deploy": "dotenv -e ../.env -- prisma migrate deploy"
+  },
+  "dependencies": {
+    "@prisma/client": "6.5.0",
+    "dotenv": "16.4.7",
+    "express": "4.21.2",
+    "ioredis": "5.4.2",
+    "zod": "3.24.2"
+  },
+  "devDependencies": {
+    "@types/express": "4.17.21",
+    "@types/node": "22.10.5",
+    "dotenv-cli": "8.0.0",
+    "prisma": "6.5.0",
+    "tsx": "4.19.2",
+    "typescript": "5.7.3"
+  }
+}
